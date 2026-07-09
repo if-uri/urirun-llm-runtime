@@ -31,3 +31,14 @@ def test_execute_posts(monkeypatch):
     assert res.get('ok') is True
     assert calls['url'].endswith('/run')
     assert calls['json']['uri'] == 'kvm://laptop/diag/query/which'
+
+
+def test_examples_importable():
+    # Ensure example scripts import runtime without side-effects
+    import importlib.util
+    from pathlib import Path
+    base = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location('example_kvm_diag',
+                                                  str(base / 'examples' / 'example_kvm_diag.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
