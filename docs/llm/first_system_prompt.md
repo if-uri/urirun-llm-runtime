@@ -7,6 +7,7 @@ Fetch index:
 - runtime_semantics: https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/runtime_semantics.md
 - environment_topology: https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/environment_topology.yaml
 - route_catalog: https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/route_catalog.yaml
+- route_schemas_lenovo: https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/route_schemas_lenovo.json
 - process_schema: https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/process_schema.json
 - openapi: https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/openapi.yaml
 
