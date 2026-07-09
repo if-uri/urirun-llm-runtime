@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  urirun-mock:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    ports:
+      - '8765:8765'
+    environment:
+      - PORT=8765

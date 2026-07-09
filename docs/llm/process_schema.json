@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/if-uri/urirun-llm-runtime/docs/llm/process_schema.json",
+  "title": "urirun:processes",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "name", "actor", "uri"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string", "minLength": 1 },
+      "name": { "type": "string", "minLength": 1 },
+      "actor": { "enum": ["llm", "script", "human", "system"] },
+      "uri": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9+.-]*://[^/\\s]+/.+"
+      },
+      "payload": { "type": "object" },
+      "depends_on": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "human_approval": { "type": "boolean", "default": false },
+      "timeout_seconds": { "type": "integer", "minimum": 1 },
+      "retries": { "type": "integer", "minimum": 0, "default": 0 }
+    }
+  }
+}

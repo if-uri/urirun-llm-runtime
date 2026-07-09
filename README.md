@@ -15,5 +15,19 @@ Usage example (from host machine):
 ```bash
 python -c "from urirun_llm_runtime.executor import Executor; e=Executor('http://192.168.188.201:8765'); print(e.execute('kvm://laptop/diag/query/which'))"
 ```
+Docker / LLM usage
+------------------
+
+Run a lightweight mock runtime in Docker Compose (useful for local LLM testing):
+
+```bash
+cd urirun-llm-runtime
+docker compose up --build
+```
+
+LLMs should fetch the OpenAPI spec at `/docs/openapi.yaml` (or the raw file in the repo)
+and generate code that posts to `/run` with JSON `{ "uri": "...", "payload": {...} }`.
+
+The repository includes a mock service at `docker/app.py` that simulates responses.
 
 CI enforces that examples/flows adopt URI-based execution patterns by running repository-level checks.

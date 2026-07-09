@@ -1,0 +1,48 @@
+# Topology template — LLM: where each URI process runs
+# Live probe overwrites generated/environment.context.yaml (see runtime/README.md)
+
+uri_runtime_environment:
+  version: 1
+  project: if-uri
+
+  how_uri_processes_run: |
+    1. Plan (flow JSON, urirun:processes block, or def run(ctx)) originates on control-plane.
+    2. Each step = scheme://target/path — target is logical node alias in registry.
+    3. Execution: POST {node_base_url}/run {"uri":"...","mode":"execute","payload":{...}}.
+    4. Node loads connector (urirun-connector-*), runs handler, returns {ok, result, error}.
+    5. Trace: journal/{ticket}-turns.jsonl, queue.log.
+
+  addressing_rules:
+    - "kvm://host/ui/query/verify on lenovo → POST http://lenovo:8765/run (not dashboard:8797)"
+    - "URIRUN_KVM_URI_HOST=host → first segment after kvm:// on execution node"
+    - "router://host/plan/query/diagnose → on target node before keyboard/HID"
+    - "Inside compose: http://host-node:8765/run"
+
+  layers:
+    control_plane:
+      services:
+        - id: host-dashboard
+          base_url: http://host-dashboard:8797
+          role: dashboard
+          schemes: [work, gap, loop, agent, planfile]
+
+    execution_nodes:
+      services:
+        - id: host-node
+          base_url: http://host-node:8765
+          deployment: docker-compose
+          uri_target_alias: host
+          notes: "Dev/test node; headless KVM (degraded display)"
+
+        - id: lenovo
+          base_url: http://lenovo:8765
+          deployment: bare-metal
+          uri_target_alias: host
+          capabilities: [kvm, signal-gui, app, vdisplay]
+          notes: "Signal Desktop + real desktop; E2E automation"
+
+  compose_network:
+    name: if-uri-uri-runtime
+    dns_aliases:
+      host-node: [host, urirun-host]
+      host-dashboard: [dashboard, control-plane]
