@@ -1,0 +1,1978 @@
+{
+  "source": "http://192.168.188.201:8765/routes",
+  "node": "lenovo",
+  "generatedAt": "2026-07-09T08:39:41Z",
+  "routeCount": 71,
+  "routes": [
+    {
+      "uri": "app://host/desktop/command/launch",
+      "title": "Launch a desktop app (XDG .desktop / open / startfile)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "compose": {
+            "default": "",
+            "title": "Compose",
+            "type": "string"
+          },
+          "args": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Args"
+          },
+          "settle": {
+            "default": 0,
+            "title": "Settle",
+            "type": "number"
+          }
+        },
+        "title": "launchInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "app://host/desktop/query/list",
+      "title": "List launchable desktop apps",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "filter": {
+            "default": "",
+            "title": "Filter",
+            "type": "string"
+          }
+        },
+        "title": "list_appsInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "env://laptop/runtime/query/health",
+      "title": "Node runtime health",
+      "effect": "query",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "uri": "kvm://host/a11y/command/act",
+      "title": "Find a UI element by role/name and focus/click/set-text it (AT-SPI)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "role": {
+            "default": "",
+            "title": "Role",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "action": {
+            "default": "focus",
+            "title": "Action",
+            "type": "string"
+          },
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "nth": {
+            "default": 0,
+            "title": "Nth",
+            "type": "integer"
+          }
+        },
+        "title": "a11y_actInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/abs/command/click",
+      "title": "Pixel-accurate click via a uinput absolute device",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "default": 0,
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "default": 0,
+            "title": "Y",
+            "type": "integer"
+          },
+          "sw": {
+            "default": 0,
+            "title": "Sw",
+            "type": "integer"
+          },
+          "sh": {
+            "default": 0,
+            "title": "Sh",
+            "type": "integer"
+          },
+          "button": {
+            "default": "left",
+            "title": "Button",
+            "type": "string"
+          },
+          "do_click": {
+            "default": true,
+            "title": "Do Click",
+            "type": "boolean"
+          },
+          "expect": {
+            "default": "",
+            "title": "Expect",
+            "type": "string"
+          },
+          "monitor": {
+            "default": 0,
+            "title": "Monitor",
+            "type": "integer"
+          }
+        },
+        "title": "click_absInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/browser/query/sessions",
+      "title": "Scan running browsers and installed profiles for active service sessions (LinkedIn, Google…)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "services": {
+            "default": "",
+            "title": "Services",
+            "type": "string"
+          }
+        },
+        "title": "browser_sessionsInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/page/command/dom-click",
+      "title": "Click an element by CSS selector (or visible text) via the DOM",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "selector": {
+            "default": "",
+            "title": "Selector",
+            "type": "string"
+          },
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "title": "cdp_dom_clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/page/command/dom-fill",
+      "title": "Fill an input/textarea/contenteditable by CSS selector via the DOM",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "selector": {
+            "default": "",
+            "title": "Selector",
+            "type": "string"
+          },
+          "value": {
+            "default": "",
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "title": "cdp_dom_fillInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/page/command/navigate",
+      "title": "Navigate the CDP page and wait until it finishes loading",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          },
+          "ready_timeout": {
+            "default": 8.0,
+            "title": "Ready Timeout",
+            "type": "number"
+          }
+        },
+        "title": "cdp_navigateInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/page/query/eval",
+      "title": "Evaluate JS in the CDP page and return the value (DOM read/inspect)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "expr": {
+            "default": "",
+            "title": "Expr",
+            "type": "string"
+          }
+        },
+        "title": "cdp_evalInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/page/query/ready",
+      "title": "Wait until the CDP page document is fully loaded",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "timeout": {
+            "default": 30.0,
+            "title": "Timeout",
+            "type": "number"
+          }
+        },
+        "title": "cdp_readyInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/session/command/ensure",
+      "title": "Reuse or launch a dedicated-profile CDP Chrome (so the router's cdp strategy is available)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          },
+          "user_data_dir": {
+            "default": "",
+            "title": "User Data Dir",
+            "type": "string"
+          },
+          "copy_from": {
+            "default": "",
+            "title": "Copy From",
+            "type": "string"
+          },
+          "wait": {
+            "default": 0.0,
+            "title": "Wait",
+            "type": "number"
+          }
+        },
+        "title": "cdp_ensureInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/session/query/ready",
+      "title": "Poll until the CDP debug endpoint is reachable (no launch)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "timeout": {
+            "default": 12.0,
+            "title": "Timeout",
+            "type": "number"
+          }
+        },
+        "title": "cdp_session_readyInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/cdp/session/query/status",
+      "title": "Is a CDP debug endpoint reachable, and on what page",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {},
+        "title": "cdp_statusInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/display/query/info",
+      "title": "Screen size, monitors, scale (the capture/action coordinate space)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {},
+        "title": "display_infoInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/doctor/query/report",
+      "title": "Report available backends + which surface to trust",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {},
+        "title": "doctorInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/env/query/profile",
+      "title": "Live capability profile of this session (cdp/atspi/ocr/input/display)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {},
+        "title": "env_profileInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/click",
+      "title": "Mouse click (optionally at x,y)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "button": {
+            "default": "left",
+            "title": "Button",
+            "type": "string"
+          },
+          "x": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "X"
+          },
+          "y": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Y"
+          }
+        },
+        "title": "clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/double-click",
+      "title": "Double click (optionally at x,y)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "X"
+          },
+          "y": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Y"
+          }
+        },
+        "title": "double_clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/drag-and-drop",
+      "title": "Drag and drop (approximate move->click->move)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "title": "Y",
+            "type": "integer"
+          },
+          "destination_x": {
+            "title": "Destination X",
+            "type": "integer"
+          },
+          "destination_y": {
+            "title": "Destination Y",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "destination_x",
+          "destination_y"
+        ],
+        "title": "drag_and_dropInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/hover",
+      "title": "Hover/move the mouse pointer to x,y",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "default": 0,
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "default": 0,
+            "title": "Y",
+            "type": "integer"
+          }
+        },
+        "title": "hoverInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/key",
+      "title": "Send a key or hotkey combo",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "key": {
+            "default": "",
+            "title": "Key",
+            "type": "string"
+          },
+          "keys": {
+            "default": "",
+            "title": "Keys",
+            "type": "string"
+          },
+          "expect_window": {
+            "default": "",
+            "title": "Expect Window",
+            "type": "string"
+          },
+          "require_fullscreen": {
+            "default": false,
+            "title": "Require Fullscreen",
+            "type": "boolean"
+          }
+        },
+        "title": "keyInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/middle-click",
+      "title": "Middle click (optionally at x,y)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "X"
+          },
+          "y": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Y"
+          }
+        },
+        "title": "middle_clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/move",
+      "title": "Move the mouse pointer (absolute)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "default": 0,
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "default": 0,
+            "title": "Y",
+            "type": "integer"
+          }
+        },
+        "title": "moveInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/right-click",
+      "title": "Right click (optionally at x,y)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "X"
+          },
+          "y": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Y"
+          }
+        },
+        "title": "right_clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/scroll",
+      "title": "Scroll the wheel (dy<0 = down)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "dy": {
+            "default": -3,
+            "title": "Dy",
+            "type": "integer"
+          }
+        },
+        "title": "scrollInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/triple-click",
+      "title": "Triple click (optionally at x,y)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "x": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "X"
+          },
+          "y": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Y"
+          }
+        },
+        "title": "triple_clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/type",
+      "title": "Type a whole string",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "expect_window": {
+            "default": "",
+            "title": "Expect Window",
+            "type": "string"
+          },
+          "require_fullscreen": {
+            "default": false,
+            "title": "Require Fullscreen",
+            "type": "boolean"
+          }
+        },
+        "title": "type_textInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/input/command/wait",
+      "title": "Pause for N seconds (let the UI settle)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "seconds": {
+            "default": 1.0,
+            "title": "Seconds",
+            "type": "number"
+          },
+          "ms": {
+            "default": 0,
+            "title": "Ms",
+            "type": "integer"
+          }
+        },
+        "title": "waitInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/proc/command/kill",
+      "title": "Terminate a process by PID or name (node lifecycle control)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "pid": {
+            "default": 0,
+            "title": "Pid",
+            "type": "integer"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "signal": {
+            "default": "TERM",
+            "title": "Signal",
+            "type": "string"
+          }
+        },
+        "title": "proc_killInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ready/query/resolve",
+      "title": "Resolve the execution surface for a task and gate readiness (resolve-first)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "task": {
+            "default": "",
+            "title": "Task",
+            "type": "string"
+          },
+          "service": {
+            "default": "",
+            "title": "Service",
+            "type": "string"
+          }
+        },
+        "title": "ready_resolveInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/screen/query/capture",
+      "title": "Capture the screen (auto backend)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "output": {
+            "default": "",
+            "title": "Output",
+            "type": "string"
+          },
+          "monitor": {
+            "default": 0,
+            "title": "Monitor",
+            "type": "integer"
+          },
+          "max_width": {
+            "default": 0,
+            "title": "Max Width",
+            "type": "integer"
+          },
+          "base64": {
+            "default": false,
+            "title": "Base64",
+            "type": "boolean"
+          },
+          "cx": {
+            "default": -1,
+            "title": "Cx",
+            "type": "integer"
+          },
+          "cy": {
+            "default": -1,
+            "title": "Cy",
+            "type": "integer"
+          },
+          "zoom": {
+            "default": 0,
+            "title": "Zoom",
+            "type": "integer"
+          },
+          "crop_w": {
+            "default": 0,
+            "title": "Crop W",
+            "type": "integer"
+          },
+          "crop_h": {
+            "default": 0,
+            "title": "Crop H",
+            "type": "integer"
+          },
+          "scope": {
+            "default": "",
+            "title": "Scope",
+            "type": "string"
+          },
+          "fmt": {
+            "default": "",
+            "title": "Fmt",
+            "type": "string"
+          }
+        },
+        "title": "captureInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/surface/query/current",
+      "title": "What UI surface is in the foreground (browser via CDP, or desktop)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {},
+        "title": "surface_currentInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/task/command/run",
+      "title": "Run a bounded input sequence",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "steps": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Steps"
+          }
+        },
+        "title": "task_runInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/command/act",
+      "title": "Self-orchestrating UI action: wait-ready → route → retry → verify",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "do": {
+            "default": "click",
+            "title": "Do",
+            "type": "string"
+          },
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "role": {
+            "default": "",
+            "title": "Role",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "value": {
+            "default": "",
+            "title": "Value",
+            "type": "string"
+          },
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "retries": {
+            "default": 3,
+            "title": "Retries",
+            "type": "integer"
+          },
+          "settle": {
+            "default": 0.7,
+            "title": "Settle",
+            "type": "number"
+          },
+          "ready_timeout": {
+            "default": 6.0,
+            "title": "Ready Timeout",
+            "type": "number"
+          },
+          "safe": {
+            "default": true,
+            "title": "Safe",
+            "type": "boolean"
+          },
+          "expect": {
+            "default": "",
+            "title": "Expect",
+            "type": "string"
+          },
+          "intent": {
+            "default": "",
+            "title": "Intent",
+            "type": "string"
+          },
+          "ticket": {
+            "default": "",
+            "title": "Ticket",
+            "type": "string"
+          }
+        },
+        "title": "ui_actInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/command/click",
+      "title": "Find a target and click it (router: cdp→atspi→vision)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "role": {
+            "default": "",
+            "title": "Role",
+            "type": "string"
+          },
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "title": "ui_clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/command/click-text",
+      "title": "Find on-screen text and click it via KVM (optionally type + submit)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "button": {
+            "default": "left",
+            "title": "Button",
+            "type": "string"
+          },
+          "nth": {
+            "default": 0,
+            "title": "Nth",
+            "type": "integer"
+          },
+          "min_conf": {
+            "default": 40,
+            "title": "Min Conf",
+            "type": "integer"
+          },
+          "then_type": {
+            "default": "",
+            "title": "Then Type",
+            "type": "string"
+          },
+          "then_key": {
+            "default": "",
+            "title": "Then Key",
+            "type": "string"
+          },
+          "monitor": {
+            "default": 0,
+            "title": "Monitor",
+            "type": "integer"
+          }
+        },
+        "title": "ui_click_textInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/command/fill",
+      "title": "Find a field, focus it and type a value (router; verifies)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "role": {
+            "default": "entry",
+            "title": "Role",
+            "type": "string"
+          },
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "value": {
+            "default": "",
+            "title": "Value",
+            "type": "string"
+          },
+          "verify": {
+            "default": true,
+            "title": "Verify",
+            "type": "boolean"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "title": "ui_fillInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/command/type-verified",
+      "title": "Grounded click→type→verify draft→optional submit",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "x": {
+            "default": -1,
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "default": -1,
+            "title": "Y",
+            "type": "integer"
+          },
+          "screen_w": {
+            "default": 0,
+            "title": "Screen W",
+            "type": "integer"
+          },
+          "screen_h": {
+            "default": 0,
+            "title": "Screen H",
+            "type": "integer"
+          },
+          "submit": {
+            "default": false,
+            "title": "Submit",
+            "type": "boolean"
+          },
+          "submit_key": {
+            "default": "Enter",
+            "title": "Submit Key",
+            "type": "string"
+          },
+          "draft_expect": {
+            "default": "",
+            "title": "Draft Expect",
+            "type": "string"
+          },
+          "sent_expect": {
+            "default": "",
+            "title": "Sent Expect",
+            "type": "string"
+          },
+          "require_draft_verify": {
+            "default": true,
+            "title": "Require Draft Verify",
+            "type": "boolean"
+          },
+          "require_sent_verify": {
+            "default": false,
+            "title": "Require Sent Verify",
+            "type": "boolean"
+          },
+          "stabilize_key": {
+            "default": "",
+            "title": "Stabilize Key",
+            "type": "string"
+          },
+          "settle": {
+            "default": 0.8,
+            "title": "Settle",
+            "type": "number"
+          },
+          "monitor": {
+            "default": 0,
+            "title": "Monitor",
+            "type": "integer"
+          }
+        },
+        "title": "ui_type_verifiedInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/query/find",
+      "title": "Locate a UI element (router: cdp→atspi→vision)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "role": {
+            "default": "",
+            "title": "Role",
+            "type": "string"
+          },
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "nth": {
+            "default": 0,
+            "title": "Nth",
+            "type": "integer"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "title": "ui_findInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/query/locate",
+      "title": "Locate on-screen elements by text (capture + OCR/VQL) → coordinates",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "query": {
+            "default": "",
+            "title": "Query",
+            "type": "string"
+          },
+          "min_conf": {
+            "default": 40,
+            "title": "Min Conf",
+            "type": "integer"
+          },
+          "monitor": {
+            "default": 0,
+            "title": "Monitor",
+            "type": "integer"
+          }
+        },
+        "title": "ui_locateInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/query/strategies",
+      "title": "Which control strategies are available right now",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {},
+        "title": "ui_strategiesInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/query/verify",
+      "title": "Assert a string is present on screen",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "expect": {
+            "default": "",
+            "title": "Expect",
+            "type": "string"
+          },
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "required": {
+            "default": false,
+            "title": "Required",
+            "type": "boolean"
+          }
+        },
+        "title": "ui_verifyInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/ui/query/wait",
+      "title": "Poll until a target appears (router)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "role": {
+            "default": "",
+            "title": "Role",
+            "type": "string"
+          },
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "timeout": {
+            "default": 10.0,
+            "title": "Timeout",
+            "type": "number"
+          },
+          "interval": {
+            "default": 0.7,
+            "title": "Interval",
+            "type": "number"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "title": "ui_waitInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/vnc/command/click",
+      "title": "Click the remote desktop: by located text or exact coords",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "x": {
+            "default": -1,
+            "title": "X",
+            "type": "integer"
+          },
+          "y": {
+            "default": -1,
+            "title": "Y",
+            "type": "integer"
+          },
+          "button": {
+            "default": 1,
+            "title": "Button",
+            "type": "integer"
+          },
+          "double": {
+            "default": false,
+            "title": "Double",
+            "type": "boolean"
+          },
+          "verify": {
+            "default": "",
+            "title": "Verify",
+            "type": "string"
+          },
+          "settle": {
+            "default": 1.0,
+            "title": "Settle",
+            "type": "number"
+          },
+          "target": {
+            "default": "",
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "title": "vnc_clickInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/vnc/command/key",
+      "title": "Press a key chord (e.g. ctrl-alt-t) over RFB",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "combo": {
+            "default": "",
+            "title": "Combo",
+            "type": "string"
+          },
+          "target": {
+            "default": "",
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "title": "vnc_keyInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/vnc/command/type",
+      "title": "Type text into the remote desktop over RFB keysyms",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "enter": {
+            "default": false,
+            "title": "Enter",
+            "type": "boolean"
+          },
+          "target": {
+            "default": "",
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "title": "vnc_typeInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/vnc/query/capture",
+      "title": "Native-resolution framebuffer screenshot over RFB",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "target": {
+            "default": "",
+            "title": "Target",
+            "type": "string"
+          },
+          "out": {
+            "default": "",
+            "title": "Out",
+            "type": "string"
+          },
+          "base64": {
+            "default": false,
+            "title": "Base64",
+            "type": "boolean"
+          }
+        },
+        "title": "vnc_captureInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/vnc/query/find",
+      "title": "Locate text on the remote framebuffer (OCR/vision chain)",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "text": {
+            "default": "",
+            "title": "Text",
+            "type": "string"
+          },
+          "role": {
+            "default": "",
+            "title": "Role",
+            "type": "string"
+          },
+          "target": {
+            "default": "",
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "title": "vnc_findInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/vnc/query/status",
+      "title": "RFB reachability + native framebuffer size",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "target": {
+            "default": "",
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "title": "vnc_statusInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/window/command/close",
+      "title": "Snapshot the active page, then close it (reversible: restore)",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "title": "window_closeInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/window/command/focus",
+      "title": "Activate a window by title",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "title": "focusInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/window/command/maximize",
+      "title": "Maximize a window by title so it fills the screen",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "title": "window_maximizeInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/window/command/restore",
+      "title": "Reopen and rehydrate a window from a close snapshot",
+      "effect": "command",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "snapshot": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Snapshot"
+          }
+        },
+        "title": "window_restoreInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "kvm://host/window/query/list",
+      "title": "List open windows",
+      "effect": "query",
+      "safe": true,
+      "kind": "local-function",
+      "inputSchema": {
+        "properties": {
+          "app": {
+            "default": "",
+            "title": "App",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "title": "window_listInput",
+        "type": "object",
+        "additionalProperties": false
+      }
+    },
+    {
+      "uri": "log://laptop/session/command/write",
+      "title": "Write local node log entry",
+      "effect": "command",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "uri": "log://laptop/session/query/recent",
+      "title": "Read local node log entries",
+      "effect": "query",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 20,
+            "maximum": 200,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "uri": "node://laptop/capability/query/check",
+      "title": "node management · capability/query/check",
+      "effect": "query",
+      "safe": true,
+      "kind": "query",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "scheme": {
+            "type": "string"
+          },
+          "route": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "uri": "node://laptop/connector/command/install",
+      "title": "node management · connector/command/install",
+      "effect": "command",
+      "safe": false,
+      "kind": "command",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "editable": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    {
+      "uri": "node://laptop/connector/query/discover",
+      "title": "node management · connector/query/discover",
+      "effect": "query",
+      "safe": true,
+      "kind": "query",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "match": {
+            "type": "string"
+          },
+          "scheme": {
+            "type": "string"
+          },
+          "roots": {
+            "type": [
+              "string",
+              "array"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "uri": "node://laptop/environment/query/facts",
+      "title": "node management · environment/query/facts",
+      "effect": "query",
+      "safe": true,
+      "kind": "query",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {}
+      }
+    },
+    {
+      "uri": "node://laptop/package/command/install",
+      "title": "node management · package/command/install",
+      "effect": "command",
+      "safe": false,
+      "kind": "command",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "spec": {
+            "type": [
+              "string",
+              "array"
+            ]
+          },
+          "upgrade": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    {
+      "uri": "node://laptop/package/query/list",
+      "title": "node management · package/query/list",
+      "effect": "query",
+      "safe": true,
+      "kind": "query",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "match": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "uri": "node://laptop/policy/query/show",
+      "title": "node management · policy/query/show",
+      "effect": "query",
+      "safe": true,
+      "kind": "query",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {}
+      }
+    },
+    {
+      "uri": "node://laptop/registry/command/adopt",
+      "title": "node management · registry/command/adopt",
+      "effect": "command",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "scheme": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "uri": "node://laptop/registry/query/installed",
+      "title": "node management · registry/query/installed",
+      "effect": "query",
+      "safe": true,
+      "kind": "query",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "match": {
+            "type": "string"
+          },
+          "scheme": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "uri": "node://laptop/runtime/query/info",
+      "title": "node management · runtime/query/info",
+      "effect": "query",
+      "safe": true,
+      "kind": "query",
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {}
+      }
+    },
+    {
+      "uri": "proc://laptop/process/query/list",
+      "title": "List top local processes",
+      "effect": "query",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 12,
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "uri": "shell://laptop/command/date",
+      "title": "Print local date",
+      "effect": "query",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "uri": "shell://laptop/command/uname",
+      "title": "Print platform name",
+      "effect": "query",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "uri": "shell://laptop/command/which",
+      "title": "Find executable path",
+      "effect": "query",
+      "safe": true,
+      "kind": "command",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "binary": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "binary"
+        ],
+        "type": "object"
+      }
+    }
+  ]
+}
