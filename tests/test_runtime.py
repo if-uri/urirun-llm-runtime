@@ -3,8 +3,6 @@ import io
 import json
 from pathlib import Path
 
-import pytest
-
 from urirun_llm_runtime.executor import Executor
 from urirun_llm_runtime.llm_context import build_first_system_prompt, docs_index
 from urirun_llm_runtime.process import (
@@ -58,7 +56,8 @@ def test_execute_processes_with_dict_plan(monkeypatch):
     e = Executor("http://example:8765")
     plan = [
         {"id": "step-1", "name": "Step 1", "actor": "script", "uri": "kvm://host/diag/query/one", "payload": {"x": 1}},
-        {"id": "step-2", "name": "Step 2", "actor": "script", "uri": "kvm://host/diag/query/two", "payload": {"y": 2}, "depends_on": ["step-1"]},
+        {"id": "step-2", "name": "Step 2", "actor": "script", "uri": "kvm://host/diag/query/two",
+         "payload": {"y": 2}, "depends_on": ["step-1"]},
     ]
     results = e.execute_processes(plan)
     assert len(results) == 2
@@ -177,6 +176,33 @@ def test_capture_for_llm_reports_missing_base64(monkeypatch):
     out = e.capture_for_llm()
     assert out["ok"] is False
     assert "pngBase64" in out["error"]
+
+
+def test_capture_for_llm_degrades_gracefully_without_pillow(monkeypatch):
+    # Pillow is an optional dependency (llm-vision extra) — simulate it being absent so this
+    # runs the same in CI regardless of whether it happens to be installed, instead of needing
+    # a second, Pillow-free install matrix just to exercise this one path.
+    png = _png_bytes(2560, 1440)  # built BEFORE the patch below — the fixture itself needs PIL
+
+    import builtins
+
+    real_import = builtins.__import__
+
+    def no_pil(name, *args, **kwargs):
+        if name == "PIL" or name.startswith("PIL."):
+            raise ImportError("simulated: Pillow not installed")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", no_pil)
+    monkeypatch.setattr("urirun_llm_runtime.executor.requests.post",
+                         lambda url, json=None, timeout=0: _capture_response(png))
+    e = Executor("http://example:8765")
+    out = e.capture_for_llm()
+
+    assert out["ok"] is True
+    assert out["resizedClientSide"] is False  # no PIL to resize with — passed through as-is
+    assert out["mimeType"] == "image/png"
+    assert base64.b64decode(out["base64"]) == png
 
 
 def test_parse_processes_block():
