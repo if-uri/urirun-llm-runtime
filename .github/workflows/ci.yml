@@ -39,6 +39,9 @@ jobs:
       - name: Gate — process JSON schema
         run: python scripts/validate_processes.py
 
+      - name: Gate — route schema snapshot (offline CI)
+        run: python scripts/snapshot_route_schemas.py --validate-only
+
       - name: Gate — first_system_prompt.md exists
         run: test -s docs/llm/first_system_prompt.md
 

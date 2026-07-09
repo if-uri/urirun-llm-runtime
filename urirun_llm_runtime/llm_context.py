@@ -54,6 +54,7 @@ def docs_index() -> dict[str, str]:
         "runtime_semantics": f"{base}/runtime_semantics.md",
         "environment_topology": f"{base}/environment_topology.yaml",
         "route_catalog": f"{base}/route_catalog.yaml",
+        "route_schemas_lenovo": f"{base}/route_schemas_lenovo.json",
         "process_schema": f"{base}/process_schema.json",
         "openapi": "https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/openapi.yaml",
     }

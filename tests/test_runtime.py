@@ -220,6 +220,18 @@ def test_lint_allows_executor():
     assert lint_python_source(good) == []
 
 
+def test_route_schemas_lenovo_snapshot():
+    path = Path(__file__).resolve().parents[1] / "docs" / "llm" / "route_schemas_lenovo.json"
+    assert path.is_file(), "run scripts/snapshot_route_schemas.py to refresh"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data.get("routeCount", 0) >= 10
+    uris = {r["uri"] for r in data.get("routes", []) if r.get("uri")}
+    assert "kvm://host/ui/command/type-verified" in uris
+    tv = next(r for r in data["routes"] if r["uri"] == "kvm://host/ui/command/type-verified")
+    props = (tv.get("inputSchema") or {}).get("properties") or {}
+    assert "text" in props and "x" in props and "submit" in props
+
+
 def test_first_system_prompt_nonempty():
     prompt = build_first_system_prompt()
     assert "URI RUNTIME" in prompt
