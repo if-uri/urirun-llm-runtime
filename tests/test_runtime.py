@@ -1,3 +1,5 @@
+import base64
+import io
 import json
 from pathlib import Path
 
@@ -88,6 +90,93 @@ def test_execute_processes_with_block_string(monkeypatch):
     assert len(results) == 1
     assert results[0]["id"] == "step-1"
     assert calls[0][1]["uri"] == "kvm://host/diag/query/one"
+
+
+def _png_bytes(width, height, *, noise=False):
+    from PIL import Image
+    if noise:
+        import os as _os
+        im = Image.frombytes("RGB", (width, height), _os.urandom(width * height * 3))
+    else:
+        im = Image.new("RGB", (width, height), color=(80, 120, 200))
+    buf = io.BytesIO()
+    im.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def _capture_response(png_bytes, **extra):
+    value = {"ok": True, "pngBase64": base64.b64encode(png_bytes).decode(), "path": "/tmp/shot.png"}
+    value.update(extra)
+    return DummyResp(json_data={"result": {"value": value}})
+
+
+def test_capture_for_llm_passes_through_small_image(monkeypatch):
+    png = _png_bytes(200, 100)
+
+    monkeypatch.setattr("urirun_llm_runtime.executor.requests.post",
+                         lambda url, json=None, timeout=0: _capture_response(png))
+    e = Executor("http://example:8765")
+    out = e.capture_for_llm()
+    assert out["ok"] is True
+    assert out["mimeType"] == "image/png"
+    assert out["resizedClientSide"] is False
+    assert out["width"] == 200
+
+
+def test_capture_for_llm_downscales_oversized_width(monkeypatch):
+    png = _png_bytes(2560, 1440)
+
+    monkeypatch.setattr("urirun_llm_runtime.executor.requests.post",
+                         lambda url, json=None, timeout=0: _capture_response(png))
+    e = Executor("http://example:8765")
+    out = e.capture_for_llm()
+    assert out["ok"] is True
+    assert out["resizedClientSide"] is True
+    assert out["width"] <= 1280
+    assert len(out["base64"]) < len(base64.b64encode(png).decode())
+
+
+def test_capture_for_llm_falls_back_to_jpeg_when_still_too_big(monkeypatch):
+    # Random noise near the width cap barely compresses as PNG — forces the byte-ceiling
+    # fallback to JPEG even though no width resize was needed.
+    png = _png_bytes(1280, 720, noise=True)
+    assert len(png) > 400_000  # sanity: the fixture actually exercises the fallback
+
+    monkeypatch.setattr("urirun_llm_runtime.executor.requests.post",
+                         lambda url, json=None, timeout=0: _capture_response(png))
+    e = Executor("http://example:8765")
+    out = e.capture_for_llm()
+    assert out["ok"] is True
+    assert out["mimeType"] == "image/jpeg"
+    assert out["bytes"] <= 400_000
+    assert out["resizedClientSide"] is True
+
+
+def test_capture_for_llm_respects_env_override(monkeypatch):
+    png = _png_bytes(2000, 1000)
+    seen = {}
+
+    def fake_post(url, json=None, timeout=0):
+        seen["payload"] = json["payload"]
+        return _capture_response(png)
+
+    monkeypatch.setattr("urirun_llm_runtime.executor.requests.post", fake_post)
+    monkeypatch.setenv("URIRUN_LLM_SCREENSHOT_MAX_WIDTH", "640")
+    e = Executor("http://example:8765")
+    out = e.capture_for_llm()
+    assert seen["payload"]["max_width"] == 640
+    assert out["width"] <= 640
+
+
+def test_capture_for_llm_reports_missing_base64(monkeypatch):
+    monkeypatch.setattr(
+        "urirun_llm_runtime.executor.requests.post",
+        lambda url, json=None, timeout=0: DummyResp(json_data={"result": {"value": {"ok": True}}}),
+    )
+    e = Executor("http://example:8765")
+    out = e.capture_for_llm()
+    assert out["ok"] is False
+    assert "pngBase64" in out["error"]
 
 
 def test_parse_processes_block():

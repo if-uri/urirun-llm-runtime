@@ -122,6 +122,27 @@ first.
   human action** — build the flow up to "typed + verified, ready to send" and stop there; do not
   self-approve the send step.
 
+## Screenshots are multimodal, not text
+
+A screenshot does **not** fit this system prompt's budget: one plain 1920×1080 PNG alone runs
+to roughly 200K base64 characters — about 8x the ENTIRE 24K-char `build_first_system_prompt()`
+budget, and `screen/query/capture`'s `pngBase64` field is never concatenated into it. Do not
+paste base64 image data into a text prompt or a `urirun:processes` payload.
+
+- Use `Executor.capture_for_llm(uri, payload)` (not a raw `execute("kvm://.../screen/query/capture")`
+  call) when a screenshot needs to reach the LLM. It requests a server-side `max_width` downscale
+  AND enforces the same cap client-side (some capture backends ignore `max_width` and return
+  full resolution regardless — a documented "cold path" behavior of `urirun-connector-kvm`), plus
+  a byte ceiling with a JPEG-quality fallback if a downscaled PNG is still too large.
+- The result (`{mimeType, base64, width, height, ...}`) is meant to be attached as a **separate
+  multimodal image content block** in the LLM API call — never inlined into
+  `build_first_system_prompt()` or any other text field.
+- Configurable via `.env` (see `.env.example`): `URIRUN_LLM_SCREENSHOT_MAX_WIDTH` (default 1280),
+  `URIRUN_LLM_SCREENSHOT_MAX_BYTES` (default 400000).
+- Without Pillow installed, the client-side safety net is skipped (the call still succeeds,
+  just may return whatever size the node sent) — install the `llm-vision` extra
+  (`pip install urirun-llm-runtime[llm-vision]`) for the size guarantee.
+
 ## Glue code (Python)
 
 Allowed pattern only:

@@ -12,10 +12,15 @@ requires-python = ">=3.10"
 dependencies = [
     "requests>=2.0",
     "jsonschema>=4.18",
+    "python-dotenv>=1.0",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "flask>=2.0"]
+dev = ["pytest>=7", "flask>=2.0", "Pillow>=10"]
+# Executor.capture_for_llm() lazy-imports Pillow to enforce screenshot size limits
+# client-side; without it, capture_for_llm() still works but skips the client-side
+# safety net (server-provided images are passed through as-is, possibly oversized).
+llm-vision = ["Pillow>=10"]
 
 [tool.setuptools.packages.find]
 where = ["."]
