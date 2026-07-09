@@ -68,6 +68,36 @@ LLM output MUST include a fenced block:
 ```
 ````
 
+## Desktop-GUI grounding (kvm) — verify BEFORE injection, not only after
+
+Learned live from a Signal-Desktop E2E on `lenovo` (GNOME-Wayland): typing first and checking
+afterward lets a wrong-window mistake actually happen before it's caught. Ground the target
+first.
+
+- **`window/query/list` and `window/command/focus` are BLIND to Electron/Flatpak windows on
+  GNOME-Wayland** (atspi only sees gnome-shell/XWayland apps; `wmctrl` can't reach Wayland-native
+  surfaces either). Signal Desktop, and apps like it, will not appear in the window list even
+  while genuinely open and visible. **`screen/query/capture` is the only ground truth** for
+  whether such an app is open/foreground — never conclude "not open" from an empty window list.
+- **`window/command/focus` / `window/command/maximize` are fire-and-forget**: the underlying
+  `wmctrl -a`/`-r` calls do NOT error when the title matches nothing. `ok:true` only means the
+  command was dispatched, not that it landed — always read the response's `verify` field
+  (`{trusted, verified/fullscreen, title}`) before trusting a focus/maximize call.
+- **Prefer `task/command/run` with a leading `{op:"focus", title:"…"}` step** over raw
+  `input/command/type`/`input/command/key`. That step auto-maximizes the window (skip with
+  `fullscreen:false`) and every `type`/`key`/`click`/`move`/`scroll` step that follows in the
+  SAME batch is re-gated against a live probe of window identity + fullscreen state — the whole
+  task is refused (nothing is sent) if a TRUSTED probe shows the wrong window focused or a
+  resized/un-maximized window, instead of only discovering the mistake after text already
+  landed. `input/command/type`/`input/command/key` also take an optional `expect_window` (+
+  `require_fullscreen`) for the same grounding outside a batch.
+- **`trusted:false` (pure Wayland, no active-window query) is "unverifiable", not "pass"** — the
+  guard degrades to best-effort in that case. Always follow with `kvm://host/ui/command/type-verified`
+  or a `screen/query/capture` + `ui/query/verify` check before any irreversible next step.
+- **The final outbound/destructive action (e.g. pressing Enter to send a message) is a genuine
+  human action** — build the flow up to "typed + verified, ready to send" and stop there; do not
+  self-approve the send step.
+
 ## Glue code (Python)
 
 Allowed pattern only:

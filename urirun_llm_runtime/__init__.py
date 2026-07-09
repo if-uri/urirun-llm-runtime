@@ -16,7 +16,6 @@ __all__ = [
     "from_dict",
     "build_first_system_prompt",
     "docs_index",
-    "docs_index",
     "lint_path",
     "lint_tree",
     "parse_processes_block",

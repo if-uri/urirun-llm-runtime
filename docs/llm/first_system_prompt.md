@@ -92,6 +92,36 @@ LLM output MUST include a fenced block:
 ```
 ````
 
+## Desktop-GUI grounding (kvm) — verify BEFORE injection, not only after
+
+Learned live from a Signal-Desktop E2E on `lenovo` (GNOME-Wayland): typing first and checking
+afterward lets a wrong-window mistake actually happen before it's caught. Ground the target
+first.
+
+- **`window/query/list` and `window/command/focus` are BLIND to Electron/Flatpak windows on
+  GNOME-Wayland** (atspi only sees gnome-shell/XWayland apps; `wmctrl` can't reach Wayland-native
+  surfaces either). Signal Desktop, and apps like it, will not appear in the window list even
+  while genuinely open and visible. **`screen/query/capture` is the only ground truth** for
+  whether such an app is open/foreground — never conclude "not open" from an empty window list.
+- **`window/command/focus` / `window/command/maximize` are fire-and-forget**: the underlying
+  `wmctrl -a`/`-r` calls do NOT error when the title matches nothing. `ok:true` only means the
+  command was dispatched, not that it landed — always read the response's `verify` field
+  (`{trusted, verified/fullscreen, title}`) before trusting a focus/maximize call.
+- **Prefer `task/command/run` with a leading `{op:"focus", title:"…"}` step** over raw
+  `input/command/type`/`input/command/key`. That step auto-maximizes the window (skip with
+  `fullscreen:false`) and every `type`/`key`/`click`/`move`/`scroll` step that follows in the
+  SAME batch is re-gated against a live probe of window identity + fullscreen state — the whole
+  task is refused (nothing is sent) if a TRUSTED probe shows the wrong window focused or a
+  resized/un-maximized window, instead of only discovering the mistake after text already
+  landed. `input/command/type`/`input/command/key` also take an optional `expect_window` (+
+  `require_fullscreen`) for the same grounding outside a batch.
+- **`trusted:false` (pure Wayland, no active-window query) is "unverifiable", not "pass"** — the
+  guard degrades to best-effort in that case. Always follow with `kvm://host/ui/command/type-verified`
+  or a `screen/query/capture` + `ui/query/verify` check before any irreversible next step.
+- **The final outbound/destructive action (e.g. pressing Enter to send a message) is a genuine
+  human action** — build the flow up to "typed + verified, ready to send" and stop there; do not
+  self-approve the send step.
+
 ## Glue code (Python)
 
 Allowed pattern only:
@@ -175,12 +205,34 @@ routes:
   kvm_ui:
     - uri: kvm://host/window/query/list
       payload: {}
-    - uri: kvm://host/window/command/focus
+      description: >-
+        BLIND to Electron/Flatpak windows on GNOME-Wayland (Signal Desktop etc. won't appear
+        even when open) — use screen/query/capture to check what's actually on screen instead.
+    - uri: kvm://host/window/command/maximize
       payload: { "title": "Signal" }
+      description: >-
+        Fire-and-forget (no error on a non-matching title) — read the response's `verify`
+        field, don't trust bare ok:true.
+    - uri: kvm://host/task/command/run
+      description: >-
+        PREFERRED way to type/click into an app: the leading focus step auto-maximizes and
+        gates every following step against a live window+fullscreen re-probe, refusing the
+        whole task (nothing sent) on a mismatch — verify BEFORE injection, not only after.
+      payload:
+        steps:
+          - { "op": "focus", "title": "Signal" }
+          - { "op": "click", "x": 400, "y": 300 }
+          - { "op": "type", "text": "hello" }
+    - uri: kvm://host/ui/command/type-verified
+      payload: { "text": "hello", "x": 400, "y": 300, "draft_expect": "hello" }
+      description: Click→type→capture→OCR-verify the draft landed, before any submit/Enter.
     - uri: kvm://host/ui/query/verify
       payload: { "text": "expected label" }
     - uri: kvm://host/input/command/type
-      payload: { "text": "hello" }
+      payload: { "text": "hello", "expect_window": "Signal", "require_fullscreen": true }
+      description: >-
+        Raw type OUTSIDE a task/command/run batch — pass expect_window (+require_fullscreen)
+        or it types blind into whatever currently has focus.
 
   planning:
     - uri: router://host/plan/query/diagnose
@@ -208,6 +260,11 @@ execution_hints:
   - "Prefer kvm://host/doctor/query/report before any GUI step"
   - "Use host-node in compose; lenovo for Signal/real desktop"
   - "Never subprocess — always POST /run"
+  - "window/query/list and window/command/focus are BLIND to Electron/Flatpak windows on GNOME-Wayland — verify what's on screen with screen/query/capture, never conclude 'not open' from an empty window list"
+  - "window/command/focus and window/command/maximize don't error on a non-matching title — always check the response's verify field before trusting them"
+  - "Ground BEFORE typing: use task/command/run with a leading {op:focus,title:...} step (auto-maximizes + gates every following type/key/click/move/scroll in the batch against a live re-probe) instead of a bare input/command/type"
+  - "trusted:false on a focus/fullscreen probe means unverifiable, not verified — still confirm with ui/command/type-verified or capture+ui/query/verify before an irreversible next step"
+  - "The final send/submit keystroke on a real outbound message is a human action — stop at 'typed + verified, ready to send', do not self-approve it"
 # Process contract — fields every LLM step must include
 
 ## Required fields

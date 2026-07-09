@@ -21,7 +21,7 @@ class DummyResp:
         self.text = text
 
     def raise_for_status(self):
-        if self.status >= 400:
+        if isinstance(self.status, int) and self.status >= 400:
             raise Exception(f"HTTP {self.status}")
 
     def json(self):
@@ -43,6 +43,51 @@ def test_execute_posts(monkeypatch):
     assert calls["url"].endswith("/run")
     assert calls["json"]["uri"] == "kvm://host/doctor/query/report"
     assert calls["json"]["mode"] == "execute"
+
+
+def test_execute_processes_with_dict_plan(monkeypatch):
+    calls = []
+
+    def fake_post(url, json=None, timeout=0):
+        calls.append((url, json, timeout))
+        return DummyResp({"ok": True, "uri": json["uri"]})
+
+    monkeypatch.setattr("urirun_llm_runtime.executor.requests.post", fake_post)
+    e = Executor("http://example:8765")
+    plan = [
+        {"id": "step-1", "name": "Step 1", "actor": "script", "uri": "kvm://host/diag/query/one", "payload": {"x": 1}},
+        {"id": "step-2", "name": "Step 2", "actor": "script", "uri": "kvm://host/diag/query/two", "payload": {"y": 2}, "depends_on": ["step-1"]},
+    ]
+    results = e.execute_processes(plan)
+    assert len(results) == 2
+    assert results[0]["id"] == "step-1"
+    assert results[1]["id"] == "step-2"
+    assert calls[0][1]["uri"] == "kvm://host/diag/query/one"
+    assert calls[1][1]["uri"] == "kvm://host/diag/query/two"
+
+
+def test_execute_processes_with_block_string(monkeypatch):
+    calls = []
+
+    def fake_post(url, json=None, timeout=0):
+        calls.append((url, json, timeout))
+        return DummyResp({"ok": True, "uri": json["uri"]})
+
+    monkeypatch.setattr("urirun_llm_runtime.executor.requests.post", fake_post)
+    e = Executor("http://example:8765")
+    block = '''```urirun:processes
+[{
+  "id": "step-1",
+  "name": "Step 1",
+  "actor": "script",
+  "uri": "kvm://host/diag/query/one",
+  "payload": {"x": 1}
+}]
+```'''
+    results = e.execute_processes(block)
+    assert len(results) == 1
+    assert results[0]["id"] == "step-1"
+    assert calls[0][1]["uri"] == "kvm://host/diag/query/one"
 
 
 def test_parse_processes_block():
