@@ -102,15 +102,17 @@ Result:
 ]
 ```
 
-## Example 2: Generate an automation plan for KVM-based desktop messaging
+## Example 2: Signal Desktop via KVM (lenovo bare-metal)
+
+**Adresowanie:** na węźle lenovo segment to `host` (`URIRUN_KVM_URI_HOST=host`), nie `laptop`.
+Dispatch: `POST http://192.168.188.201:8765/run`. Przed keyboard: `router://host/plan/query/diagnose`.
 
 Prompt:
 
 """
 You are an LLM tasked with producing a process plan in `urirun:processes` format.
-The user needs a desktop automation flow that opens Signal on a remote KVM target,
-verifies the window, types a message, and confirms completion. Use KVM and
-markpact/marksync primitives where appropriate.
+Send a text message via Signal Desktop on lenovo using ONLY registered kvm://host/... URIs.
+Output one fenced ```urirun:processes``` block.
 """
 
 Result:
@@ -118,57 +120,103 @@ Result:
 ```urirun:processes
 [
   {
-    "id": "prepare-signal-kvm",
-    "name": "Fetch remote KVM and Signal desktop status",
+    "id": "kvm-doctor",
+    "name": "KVM capability report (Wayland/display)",
     "actor": "script",
-    "uri": "kvm://laptop/diag/query/signal-status",
-    "payload": {
-      "verify_window": true,
-      "expected_title": "Signal"
-    },
+    "uri": "kvm://host/doctor/query/report",
+    "payload": {},
     "depends_on": [],
     "human_approval": false,
-    "timeout_seconds": 120,
+    "timeout_seconds": 60,
     "retries": 1
   },
   {
-    "id": "focus-signal-window",
-    "name": "Focus Signal desktop window via KVM",
+    "id": "list-windows",
+    "name": "Enumerate desktop windows",
     "actor": "script",
-    "uri": "kvm://laptop/gui/focus",
-    "payload": {
-      "window_title": "Signal"
-    },
-    "depends_on": ["prepare-signal-kvm"],
+    "uri": "kvm://host/window/query/list",
+    "payload": {},
+    "depends_on": ["kvm-doctor"],
+    "human_approval": false,
+    "timeout_seconds": 30,
+    "retries": 1
+  },
+  {
+    "id": "focus-signal",
+    "name": "Focus Signal window",
+    "actor": "script",
+    "uri": "kvm://host/window/command/focus",
+    "payload": {"title": "Signal"},
+    "depends_on": ["list-windows"],
     "human_approval": false,
     "timeout_seconds": 90,
     "retries": 2
   },
   {
-    "id": "type-signal-message",
-    "name": "Type message into Signal using KVM automation",
+    "id": "probe-composer",
+    "name": "Defensive 3-char probe in composer",
     "actor": "script",
-    "uri": "kvm://laptop/gui/type",
-    "payload": {
-      "text": "Hello from the urirun automation flow. This message was sent by KVM desktop control."
-    },
-    "depends_on": ["focus-signal-window"],
+    "uri": "kvm://host/input/command/type",
+    "payload": {"text": "TST"},
+    "depends_on": ["focus-signal"],
     "human_approval": false,
-    "timeout_seconds": 120,
-    "retries": 2
+    "timeout_seconds": 60,
+    "retries": 1
   },
   {
-    "id": "confirm-message-sent",
-    "name": "Confirm the message was sent successfully",
+    "id": "verify-probe",
+    "name": "Verify probe visible in UI",
     "actor": "script",
-    "uri": "kvm://laptop/gui/confirm",
-    "payload": {
-      "verification": "message-delivered"
-    },
-    "depends_on": ["type-signal-message"],
+    "uri": "kvm://host/ui/query/verify",
+    "payload": {"text": "TST"},
+    "depends_on": ["probe-composer"],
     "human_approval": false,
-    "timeout_seconds": 90,
+    "timeout_seconds": 30,
     "retries": 1
+  },
+  {
+    "id": "type-message",
+    "name": "Type full message",
+    "actor": "script",
+    "uri": "kvm://host/input/command/type",
+    "payload": {"text": "Hello from urirun KVM flow"},
+    "depends_on": ["verify-probe"],
+    "human_approval": false,
+    "timeout_seconds": 60,
+    "retries": 1
+  },
+  {
+    "id": "send-return",
+    "name": "Send with Return key",
+    "actor": "script",
+    "uri": "kvm://host/input/command/key",
+    "payload": {"keys": "Return"},
+    "depends_on": ["type-message"],
+    "human_approval": false,
+    "timeout_seconds": 30,
+    "retries": 1
+  },
+  {
+    "id": "verify-sent",
+    "name": "Post-send verification",
+    "actor": "script",
+    "uri": "kvm://host/ui/query/verify",
+    "payload": {"text": "Hello from urirun"},
+    "depends_on": ["send-return"],
+    "human_approval": false,
+    "timeout_seconds": 30,
+    "retries": 1
+  },
+  {
+    "id": "final-capture",
+    "name": "Evidence screenshot",
+    "actor": "script",
+    "uri": "kvm://host/screen/query/capture",
+    "payload": {"max_width": 480},
+    "depends_on": ["verify-sent"],
+    "human_approval": false,
+    "timeout_seconds": 30,
+    "retries": 0
   }
 ]
 ```
