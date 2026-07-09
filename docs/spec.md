@@ -1,22 +1,106 @@
-# URIRUN LLM Runtime — Minimal Runtime Spec
 
-This file describes the canonical runtime contract that LLMs should target when generating code that executes "URI processes" in the ifURI ecosystem.
+# URIRUN LLM Runtime — OpenAPI Runtime Spec
 
-1) Execution endpoint
+openapi: 3.0.3
+info:
+	title: urirun LLM Runtime API
+	version: '0.1.0'
+	description: |
+		Canonical runtime contract for executing URI processes in the ifURI ecosystem.
+		LLMs should target this API when generating code that performs external actions
+		(kvm://, app://, shell://, work://, etc.).
 
-- POST {node}/run
-- Request JSON: { "uri": "kvm://laptop/diag/query/which", "payload": { ... } }
-- Response JSON: arbitrary result object; success convention: { "ok": true, ... }
+servers:
+	- url: http://{host}:{port}
+		variables:
+			host:
+				default: localhost
+			port:
+				default: '8765'
 
-2) Semantic guarantees
+paths:
+	/run:
+		post:
+			summary: Execute a URI process
+			description: |
+				Execute a single atomic URI step on the node. The runtime interprets the
+				scheme and path (query vs command) and returns a JSON result object.
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							$ref: '#/components/schemas/RunRequest'
+			responses:
+				'200':
+					description: Execution result
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/RunResponse'
+				'4XX':
+					description: Client error
+				'5XX':
+					description: Server error
 
-- The runtime SHALL interpret `uri` as a single atomic step: query vs command vs metadata as encoded by scheme and path.
-- The runtime SHOULD return `ok: true` on successful execution and include `via`/`action` details where applicable.
+components:
+	schemas:
+		RunRequest:
+			type: object
+			required: [uri]
+			properties:
+				uri:
+					type: string
+					description: The URI to execute, e.g. kvm://laptop/diag/query/which
+					example: kvm://laptop/diag/query/which
+				payload:
+					type: object
+					additionalProperties: true
+					description: Optional payload for the URI
+		RunResponse:
+			type: object
+			properties:
+				ok:
+					type: boolean
+					description: Success indicator
+				action:
+					type: string
+					description: Per-scheme action (e.g. capture, type, focus)
+				via:
+					type: string
+					description: Which backend was used (rfb, portal, wtype, ydotool)
+				result:
+					type: object
+					additionalProperties: true
+				error:
+					type: string
+					description: Error string on failure
 
-3) Security
+security:
+	- bearerAuth: []
 
-- Hosts may require `URIRUN_NODE_TOKEN` or similar to authenticate POST /run. Clients SHOULD support sending tokens via HTTP headers `Authorization: Bearer <TOKEN>`.
+components:
+	securitySchemes:
+		bearerAuth:
+			type: http
+			scheme: bearer
+			bearerFormat: JWT
 
-4) LLM integration
+examples:
+	kvm_diag:
+		summary: KVM diagnostic query
+		value:
+			uri: kvm://laptop/diag/query/which
+			payload: {}
 
-- When synthesizing code that performs actions, the LLM should prefer constructing URIs and calling the runtime endpoint instead of shelling out or calling OS-level subprocesses.
+	shell_date:
+		summary: Run date via shell://
+		value:
+			uri: shell://laptop/command/date
+			payload: {}
+
+notes:
+	- The runtime MUST document scheme semantics externally (this OpenAPI file
+		defines the transport and core shapes only).
+	- Clients MAY set `Authorization: Bearer <TOKEN>` when the node requires auth.
+
