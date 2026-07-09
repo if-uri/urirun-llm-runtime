@@ -1,0 +1,30 @@
+[
+  {
+    "id": "step-1-env",
+    "name": "Query KVM environment profile",
+    "actor": "script",
+    "uri": "kvm://host/env/query/profile",
+    "payload": {},
+    "depends_on": [],
+    "human_approval": false,
+    "timeout_seconds": 60,
+    "retries": 1
+  },
+  {
+    "id": "step-2-doctor",
+    "name": "Run KVM doctor report",
+    "actor": "script",
+    "uri": "kvm://host/doctor/query/report",
+    "payload": {},
+    "depends_on": ["step-1-env"],
+    "human_approval": false
+  },
+  {
+    "id": "step-3-twin",
+    "name": "Twin environment profile",
+    "actor": "script",
+    "uri": "twin://host/environment/query/profile",
+    "payload": {},
+    "depends_on": ["step-2-doctor"]
+  }
+]

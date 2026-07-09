@@ -51,6 +51,10 @@ def lint_python_source(source: str, *, path: str = "<string>") -> list[str]:
             name = _qualname(node.func)
             if name in _BANNED_CALLS:
                 errors.append(f"{path}: banned call {name} — use Executor.execute(uri)")
+            if name in ("Executor.execute", "execute", "run_processes") or (
+                isinstance(node.func, ast.Attribute) and node.func.attr in ("execute", "run_processes")
+            ):
+                has_run_uri = True
         if isinstance(node, ast.Attribute) and node.attr == "run_uri":
             has_run_uri = True
         if isinstance(node, ast.Constant) and isinstance(node.value, str):

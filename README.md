@@ -1,33 +1,102 @@
 # urirun-llm-runtime
 
-This repository contains a minimal runtime library and spec for executing "URI processes" in the ifURI ecosystem. The goal is to provide a canonical runtime description and a small HTTP executor library that LLMs can target when producing code that runs tasks via `kvm://`, `app://`, `shell://`, `work://` and other URI schemes.
+Canonical **LLM-facing project** for the if-uri URI process execution runtime.
 
-It also includes a CI workflow that runs tests to ensure the runtime is stable and examples follow the URI-driven execution model.
+Repo: https://github.com/if-uri/urirun-llm-runtime
 
-Key parts:
+LLM clients should load this repository (or its raw docs) as project context so generated code uses `POST /run` with URI processes — never raw `subprocess` / GUI hacks.
 
-- `urirun_llm_runtime/executor.py` — an HTTP-based executor that talks to a running node's `/run` endpoint and executes a URI.
-- `docs/spec.md` — a concise machine-readable description of the runtime semantics for LLM consumption.
-- `.github/workflows/ci.yml` — runs tests on each push and pull request.
+## What this repo contains
 
-Usage example (from host machine):
+| Path | Purpose |
+|------|---------|
+| `docs/llm/first_system_prompt.md` | Assembled system prompt (topology + routes + contract) |
+| `docs/llm/runtime_semantics.md` | How `POST /run` works |
+| `docs/llm/process_schema.json` | JSON Schema for `urirun:processes` blocks |
+| `docs/openapi.yaml` | Transport API contract |
+| `urirun_llm_runtime/` | Python executor, process runner, validators |
+| `runtime/docker-compose.yml` | Real if-uri node (requires `if-uri` clone) |
+| `docker/` | Lightweight mock node for offline CI |
+| `.github/workflows/ci.yml` | **Blocking gates** — merge fails if any gate fails |
+
+## LLM consumption (raw URLs)
+
+```text
+https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/first_system_prompt.md
+https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/runtime_semantics.md
+https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/llm/route_catalog.yaml
+https://raw.githubusercontent.com/if-uri/urirun-llm-runtime/main/docs/openapi.yaml
+```
+
+Or in Python:
+
+```python
+from urirun_llm_runtime import build_first_system_prompt, docs_index
+print(build_first_system_prompt())
+print(docs_index())
+```
+
+## LLM output format
+
+````markdown
+```urirun:processes
+[
+  {
+    "id": "step-1",
+    "name": "Diagnose KVM",
+    "actor": "script",
+    "uri": "kvm://host/doctor/query/report",
+    "payload": {},
+    "depends_on": []
+  }
+]
+```
+````
+
+## Glue code (allowed)
+
+```python
+from urirun_llm_runtime import Executor
+
+def run(ctx=None):
+    return Executor("http://host-node:8765").execute("kvm://host/env/query/profile")
+```
+
+## Local development
 
 ```bash
-python -c "from urirun_llm_runtime.executor import Executor; e=Executor('http://192.168.188.201:8765'); print(e.execute('kvm://laptop/diag/query/which'))"
+pip install -e ".[dev]"
+python scripts/assemble_llm_prompt.py
+pytest -q
+python scripts/validate_examples.py
+python scripts/validate_processes.py
 ```
-Docker / LLM usage
-------------------
 
-Run a lightweight mock runtime in Docker Compose (useful for local LLM testing):
+### Mock runtime (no if-uri)
 
 ```bash
-cd urirun-llm-runtime
-docker compose up --build
+docker compose up -d --build urirun-mock
+curl -sf http://127.0.0.1:8765/health
 ```
 
-LLMs should fetch the OpenAPI spec at `/docs/openapi.yaml` (or the raw file in the repo)
-and generate code that posts to `/run` with JSON `{ "uri": "...", "payload": {...} }`.
+### Real runtime (if-uri monorepo)
 
-The repository includes a mock service at `docker/app.py` that simulates responses.
+```bash
+git clone https://github.com/if-uri/if-uri ../if-uri   # sibling of this repo
+echo "IF_URI_ROOT=../if-uri" > runtime/.env
+docker compose -f runtime/docker-compose.yml up -d host-node
+docker compose -f runtime/docker-compose.yml --profile smoke run --rm uri-smoke
+```
 
-CI enforces that examples/flows adopt URI-based execution patterns by running repository-level checks.
+## CI gates (blocking)
+
+1. **unit-and-gates** — pytest, glue lint, process JSON schema, prompt artifact
+2. **mock-runtime-smoke** — `POST /run` on mock node
+3. **if-uri-runtime-smoke** — builds real if-uri `host-node`, runs URI smoke + live Executor
+
+All three must pass on `main`.
+
+## Related
+
+- [if-uri](https://github.com/if-uri/if-uri) — monorepo with connectors and dashboard
+- [markpact + marksync prompt](docs/markpact_marksync_prompt.md) — orchestration primitives

@@ -4,12 +4,25 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "urirun-llm-runtime"
-version = "0.1.0"
-description = "Canonical runtime wrapper and spec for URI-based process execution (ifURI)"
-authors = [ { name = "ifURI" } ]
+version = "0.2.0"
+description = "Canonical LLM-facing URI process runtime — spec, executor, CI gates"
+authors = [{ name = "ifURI" }]
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "requests>=2.0",
+    "jsonschema>=4.18",
 ]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "flask>=2.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["urirun_llm_runtime*"]
+
+[tool.setuptools.package-dir]
+"" = "."
 
 [tool.pytest.ini_options]
 minversion = "7.0"

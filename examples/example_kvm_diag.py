@@ -1,16 +1,13 @@
-"""Example: query KVM diagnostic using the urirun-llm-runtime Executor.
-
-This script demonstrates how LLM-generated code should call the runtime
-endpoint instead of invoking subprocesses.
-"""
-from urirun_llm_runtime.executor import Executor
+"""Example: query KVM diagnostic using the urirun-llm-runtime Executor."""
+from urirun_llm_runtime import Executor
 
 
 def main():
-    e = Executor('http://192.168.188.201:8765')
-    res = e.execute('kvm://laptop/diag/query/which')
-    print('Result:', res)
+    node = "http://host-node:8765"  # compose network; use 127.0.0.1:18765 from host
+    e = Executor(node)
+    res = e.execute("kvm://host/doctor/query/report")
+    print("ok:", res.get("ok"), "uri:", res.get("uri"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

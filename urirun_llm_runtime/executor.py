@@ -2,16 +2,21 @@
 from __future__ import annotations
 
 import json
+import os
 from typing import Any
 
+from dotenv import load_dotenv
 import requests
+
+load_dotenv()
 
 
 class Executor:
     """Execute atomic URI steps on a running urirun node."""
 
-    def __init__(self, node_url: str = "http://localhost:8765", *, timeout: int = 60) -> None:
-        self.node_url = node_url.rstrip("/")
+    def __init__(self, node_url: str | None = None, *, timeout: int = 60) -> None:
+        url = node_url or os.environ.get("URIRUN_NODE_URL") or "http://localhost:8765"
+        self.node_url = url.rstrip("/")
         self.timeout = timeout
 
     def health(self) -> dict[str, Any]:

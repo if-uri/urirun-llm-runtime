@@ -1,0 +1,51 @@
+# Route catalog snapshot — common URIs for LLM process planning
+# Full list: GET {node}/routes after `docker compose up host-node`
+
+routes:
+  diagnostics:
+    - uri: kvm://host/env/query/profile
+      payload: {}
+      description: Platform, display, CDP, input backends
+    - uri: kvm://host/doctor/query/report
+      payload: {}
+      description: Honest capability report before automation
+    - uri: twin://host/environment/query/profile
+      payload: {}
+      description: Twin planner environment profile
+
+  kvm_ui:
+    - uri: kvm://host/window/query/list
+      payload: {}
+    - uri: kvm://host/window/command/focus
+      payload: { "title": "Signal" }
+    - uri: kvm://host/ui/query/verify
+      payload: { "text": "expected label" }
+    - uri: kvm://host/input/command/type
+      payload: { "text": "hello" }
+
+  planning:
+    - uri: router://host/plan/query/diagnose
+      payload:
+        intent: { "id": "task" }
+        flow:
+          steps:
+            - { uri: "kvm://host/env/query/profile", payload: {} }
+
+  repair:
+    - uri: urifix://host/chain/query/diagnose
+      payload:
+        chain:
+          - { uri: "kvm://host/env/query/profile", payload: {} }
+
+  orchestration:
+    - uri: work://dashboard/ticket/command/create
+      description: Control-plane only (dashboard node)
+    - uri: marksync://sync-server/push
+      description: Push contract to marksync hub
+    - uri: markpact://local/run
+      description: Execute markpact README blocks
+
+execution_hints:
+  - "Prefer kvm://host/doctor/query/report before any GUI step"
+  - "Use host-node in compose; lenovo for Signal/real desktop"
+  - "Never subprocess — always POST /run"

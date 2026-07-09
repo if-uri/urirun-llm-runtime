@@ -1,0 +1,89 @@
+# Real if-uri URI runtime — requires if-uri monorepo clone
+#
+# Setup:
+#   git clone https://github.com/if-uri/if-uri ../if-uri
+#   export IF_URI_ROOT=/path/to/if-uri
+#   docker compose -f runtime/docker-compose.yml up -d host-node
+#
+# Smoke:
+#   docker compose -f runtime/docker-compose.yml --profile smoke run --rm uri-smoke
+
+name: urirun-llm-runtime
+
+services:
+  host-node:
+    build:
+      context: ${IF_URI_ROOT}
+      dockerfile: compose/uri-runtime/Dockerfile
+    image: if-uri-uri-runtime:latest
+    hostname: host-node
+    ports:
+      - "${HOST_NODE_PORT:-18765}:8765"
+    volumes:
+      - ${IF_URI_ROOT}:/if-uri:ro
+    environment:
+      URIRUN_NODE_SELF_URL: http://host-node:8765
+      URIRUN_KVM_URI_HOST: host
+      IF_URI_ROOT: /if-uri
+      URIRUN_NODE_PORT: "8765"
+    working_dir: /if-uri
+    command: ["/usr/local/bin/entrypoint-node.sh"]
+    networks:
+      uri-runtime:
+        aliases: [host, urirun-host]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8765/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 90s
+
+  host-dashboard:
+    build:
+      context: ${IF_URI_ROOT}
+      dockerfile: compose/uri-runtime/Dockerfile
+    image: if-uri-uri-runtime:latest
+    hostname: host-dashboard
+    profiles: ["full"]
+    ports:
+      - "${DASHBOARD_PORT:-18797}:8797"
+    volumes:
+      - ${IF_URI_ROOT}:/if-uri:rw
+      - uri-journal:/root/.urirun
+    environment:
+      URIRUN_KORU_PROJECT: /if-uri
+      URIRUN_HOST_URL: http://host-node:8765
+      URIRUN_DASHBOARD_PORT: "8797"
+    working_dir: /if-uri
+    command: ["/usr/local/bin/entrypoint-dashboard.sh"]
+    depends_on:
+      host-node:
+        condition: service_healthy
+    networks:
+      uri-runtime:
+        aliases: [dashboard, control-plane]
+    extra_hosts:
+      - "lenovo:host-gateway"
+
+  uri-smoke:
+    image: if-uri-uri-runtime:latest
+    profiles: ["smoke"]
+    depends_on:
+      host-node:
+        condition: service_healthy
+    environment:
+      URIRUN_NODE_URL: http://host-node:8765
+    volumes:
+      - ${IF_URI_ROOT}:/if-uri:ro
+    working_dir: /if-uri/compose/uri-runtime
+    command: ["/usr/local/bin/uri-smoke-test.sh"]
+    networks:
+      - uri-runtime
+
+networks:
+  uri-runtime:
+    driver: bridge
+    name: if-uri-uri-runtime
+
+volumes:
+  uri-journal:
