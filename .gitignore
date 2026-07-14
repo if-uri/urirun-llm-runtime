@@ -5,3 +5,5 @@ __pycache__/
 .venv/
 runtime/.env
 .env
+.code2llm_cache
+.idea
