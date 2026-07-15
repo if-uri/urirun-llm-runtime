@@ -92,6 +92,11 @@ def validate_processes(processes: list[UriProcess]) -> list[str]:
         for dep in proc.depends_on:
             if dep not in ids:
                 errors.append(f"{proc.id}: unknown depends_on {dep!r}")
+    if not errors:
+        try:
+            topological_order(processes)
+        except ValueError as exc:
+            errors.append(str(exc))
     return errors
 
 
@@ -99,13 +104,19 @@ def topological_order(processes: list[UriProcess]) -> list[UriProcess]:
     by_id = {p.id: p for p in processes}
     order: list[UriProcess] = []
     done: set[str] = set()
+    visiting: list[str] = []
 
     def visit(pid: str) -> None:
         if pid in done:
             return
+        if pid in visiting:
+            cycle = visiting[visiting.index(pid):] + [pid]
+            raise ValueError("dependency cycle: " + " -> ".join(cycle))
+        visiting.append(pid)
         proc = by_id[pid]
         for dep in proc.depends_on:
             visit(dep)
+        visiting.pop()
         done.add(pid)
         order.append(proc)
 

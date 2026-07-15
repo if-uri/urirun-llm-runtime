@@ -3,6 +3,8 @@ import io
 import json
 from pathlib import Path
 
+import pytest
+
 from urirun_llm_runtime.executor import Executor
 from urirun_llm_runtime.llm_context import build_first_system_prompt, docs_index
 from urirun_llm_runtime.process import (
@@ -229,6 +231,21 @@ def test_topological_order():
     ]
     order = [p.id for p in topological_order(procs)]
     assert order == ["a", "b"]
+
+
+def test_validate_processes_rejects_dependency_cycle():
+    procs = [
+        UriProcess("a", "A", "script", "kvm://host/env/query/profile", depends_on=["b"]),
+        UriProcess("b", "B", "script", "kvm://host/doctor/query/report", depends_on=["a"]),
+    ]
+    assert validate_processes(procs) == ["dependency cycle: a -> b -> a"]
+    with pytest.raises(ValueError, match="dependency cycle: a -> b -> a"):
+        topological_order(procs)
+
+
+def test_validate_processes_rejects_self_dependency():
+    proc = UriProcess("a", "A", "script", "kvm://host/env/query/profile", depends_on=["a"])
+    assert validate_processes([proc]) == ["dependency cycle: a -> a"]
 
 
 def test_lint_bans_subprocess():
