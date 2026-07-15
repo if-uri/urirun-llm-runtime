@@ -62,6 +62,23 @@ def run(ctx=None):
     return Executor("http://host-node:8765").execute("kvm://host/env/query/profile")
 ```
 
+## CLI
+
+Installing the package provides a `urirun-llm` command (also `python -m urirun_llm_runtime`):
+
+```bash
+urirun-llm health                               # GET {node}/health
+urirun-llm routes                               # GET {node}/routes
+urirun-llm execute kvm://host/env/query/profile # POST {node}/run for one URI
+urirun-llm run plan.json                         # execute a urirun:processes plan (file or -)
+urirun-llm validate plan.json                    # parse + validate a plan, no execution
+urirun-llm lint examples/glue                    # anti-subprocess CI gate over glue
+urirun-llm prompt --ticket "check domains"       # print the first LLM system prompt
+```
+
+The node URL comes from `--node` or `$URIRUN_NODE_URL` (default `http://localhost:8765`).
+`execute`/`run` default to `--mode execute`; pass `--mode dry-run` to preview.
+
 ## Local development
 
 ```bash
