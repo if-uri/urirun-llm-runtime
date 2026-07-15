@@ -1,5 +1,5 @@
 """urirun-llm-runtime — canonical LLM-facing URI process execution library."""
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 from urirun_llm_runtime.cli import main as cli_main
 from urirun_llm_runtime.executor import Executor

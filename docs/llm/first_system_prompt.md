@@ -310,7 +310,11 @@ execution_hints:
 
 ## Execution order
 
-Steps run in topological order of `depends_on`. Steps with `human_approval: true` pause until approved.
+Steps run in topological order of `depends_on`. Dependency cycles and self-dependencies are invalid and rejected before execution. Steps with `human_approval: true` pause until approved.
+
+The `uri` field must always be a concrete executable address. Wildcards such as
+`youtube://*` belong in an authorization contract; they are not executable
+process addresses.
 
 ## Validation
 
