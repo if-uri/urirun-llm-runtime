@@ -6,6 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-07-15
+
 ### Added
 - `urirun-llm` console CLI (`urirun_llm_runtime.cli`) plus
   `python -m urirun_llm_runtime`, exposing `health`, `routes`, `execute`,
