@@ -74,25 +74,28 @@ def snapshot(node: str = "lenovo", *, base_url: str = "") -> Path:
     return path
 
 
+def _check_required_uris(uris: set[str]) -> list[str]:
+    return [f"required URI missing: {req}" for req in _REQUIRED_URIS if req not in uris]
+
+
+def _check_type_verified(routes: list[dict]) -> list[str]:
+    tv = next((r for r in routes if isinstance(r, dict) and r.get("uri") == "kvm://host/ui/command/type-verified"), None)
+    if not tv:
+        return []
+    props = (tv.get("inputSchema") or {}).get("properties") or {}
+    fields = ("text", "x", "y", "submit", "draft_expect")
+    return [f"type-verified missing inputSchema property: {field}" for field in fields if field not in props]
+
+
 def validate_snapshot(path: Path) -> list[str]:
-    errors: list[str] = []
     if not path.is_file():
         return [f"missing {path}"]
     data = json.loads(path.read_text(encoding="utf-8"))
     routes = data.get("routes") or []
     if not routes:
-        errors.append("routes array empty")
+        return ["routes array empty"]
     uris = {str(r.get("uri")) for r in routes if isinstance(r, dict)}
-    for req in _REQUIRED_URIS:
-        if req not in uris:
-            errors.append(f"required URI missing: {req}")
-    tv = next((r for r in routes if r.get("uri") == "kvm://host/ui/command/type-verified"), None)
-    if tv:
-        props = (tv.get("inputSchema") or {}).get("properties") or {}
-        for field in ("text", "x", "y", "submit", "draft_expect"):
-            if field not in props:
-                errors.append(f"type-verified missing inputSchema property: {field}")
-    return errors
+    return _check_required_uris(uris) + _check_type_verified(routes)
 
 
 def main() -> int:

@@ -69,29 +69,36 @@ def from_dict(item: dict[str, Any]) -> UriProcess:
     )
 
 
-def validate_processes(processes: list[UriProcess]) -> list[str]:
+def _validate_process_fields(proc: UriProcess, seen: set[str]) -> list[str]:
     errors: list[str] = []
-    seen: set[str] = set()
-    for proc in processes:
-        if not proc.id:
-            errors.append("process missing id")
-            continue
-        if proc.id in seen:
-            errors.append(f"duplicate id: {proc.id}")
-        seen.add(proc.id)
-        if proc.actor not in _ALLOWED_ACTORS:
-            errors.append(f"{proc.id}: invalid actor {proc.actor!r}")
-        if not _URI_RE.match(proc.uri):
-            errors.append(f"{proc.id}: invalid uri {proc.uri!r}")
-        for dep in proc.depends_on:
-            if dep not in seen and dep != proc.id:
-                # dependency may appear later — checked in second pass
-                pass
+    if not proc.id:
+        return ["process missing id"]
+    if proc.id in seen:
+        errors.append(f"duplicate id: {proc.id}")
+    seen.add(proc.id)
+    if proc.actor not in _ALLOWED_ACTORS:
+        errors.append(f"{proc.id}: invalid actor {proc.actor!r}")
+    if not _URI_RE.match(proc.uri):
+        errors.append(f"{proc.id}: invalid uri {proc.uri!r}")
+    return errors
+
+
+def _validate_process_dependencies(processes: list[UriProcess]) -> list[str]:
     ids = {p.id for p in processes}
+    errors: list[str] = []
     for proc in processes:
         for dep in proc.depends_on:
             if dep not in ids:
                 errors.append(f"{proc.id}: unknown depends_on {dep!r}")
+    return errors
+
+
+def validate_processes(processes: list[UriProcess]) -> list[str]:
+    errors: list[str] = []
+    seen: set[str] = set()
+    for proc in processes:
+        errors.extend(_validate_process_fields(proc, seen))
+    errors.extend(_validate_process_dependencies(processes))
     if not errors:
         try:
             topological_order(processes)
