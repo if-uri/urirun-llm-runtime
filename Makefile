@@ -1,4 +1,4 @@
-.PHONY: help install install-dev test lint validate-examples clean
+.PHONY: help install install-dev test doctor-test doctor-health lint validate-examples clean
 
 PYTHON ?= python3
 PIP ?= $(PYTHON) -m pip
@@ -8,6 +8,8 @@ help:
 	@echo "  install           Install runtime dependencies"
 	@echo "  install-dev       Install development dependencies (pytest, ruff, ...)"
 	@echo "  test              Run the test suite with pytest"
+	@echo "  doctor-test       Run the test gate used by Doctor/OneDev"
+	@echo "  doctor-health     Verify the installed runtime imports"
 	@echo "  lint              Run ruff lint checks"
 	@echo "  validate-examples Validate example plans with urirun-llm CLI"
 	@echo "  clean             Remove build and cache artifacts"
@@ -18,8 +20,13 @@ install:
 install-dev:
 	$(PIP) install -e ".[dev]"
 
-test:
+doctor-test:
 	$(PYTHON) -m pytest
+
+doctor-health:
+	$(PYTHON) -c "import urirun_llm_runtime"
+
+test: doctor-test
 
 lint:
 	$(PYTHON) -m ruff check .
