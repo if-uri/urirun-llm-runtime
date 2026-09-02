@@ -94,7 +94,10 @@ def test_execute_processes_with_block_string(monkeypatch):
 
 
 def _png_bytes(width, height, *, noise=False):
-    from PIL import Image
+    Image = pytest.importorskip(
+        "PIL.Image",
+        reason="Pillow is optional; image-resize coverage runs with the llm-vision/dev extra",
+    )
     if noise:
         import os as _os
         im = Image.frombytes("RGB", (width, height), _os.urandom(width * height * 3))
