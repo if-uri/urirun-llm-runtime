@@ -1,0 +1,15 @@
+# Repair checklist
+
+Process: `repair.v1`
+Issue: `#18`
+Correlation ID: `31812202249`
+
+- [x] Reproduce the original failure
+- [x] Fix the root cause
+- [x] Add or update regression tests
+- [x] Update implementation documentation
+- [x] Produce digest-bound ticket2dsl, code2dsl, docs2dsl and service2dsl projections
+- [x] Complete every Repair TODO item
+- [x] technical check failed: test
+- [x] make test (doctor-test) skips Pillow-only fixtures when the optional llm-vision/dev extra is unavailable.
+- [x] LLM verdict addressed: optional-dependency behavior and test coverage now agree.
