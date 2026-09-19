@@ -1,0 +1,31 @@
+{
+  "repository": "if-uri/urirun-llm-runtime",
+  "requiredChecks": [
+    {
+      "name": "Lint (ruff)",
+      "workflowFile": ".github/workflows/ci.yml"
+    },
+    {
+      "name": "Unit tests + URI glue gates",
+      "workflowFile": ".github/workflows/ci.yml"
+    },
+    {
+      "name": "Mock runtime smoke",
+      "workflowFile": ".github/workflows/ci.yml"
+    },
+    {
+      "name": "Real urirun runtime smoke (blocking)",
+      "workflowFile": ".github/workflows/ci.yml"
+    },
+    {
+      "name": "governance / remote lifecycle",
+      "workflowFile": ".github/workflows/new-project-governance.yml"
+    },
+    {
+      "name": "governance / enforce",
+      "workflowFile": ".github/workflows/new-project-governance.yml"
+    }
+  ],
+  "schema": "new-project.required-checks/v1",
+  "version": 1
+}
