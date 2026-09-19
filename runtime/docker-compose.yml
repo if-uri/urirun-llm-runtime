@@ -15,7 +15,7 @@ services:
     build:
       context: ${IF_URI_ROOT}
       dockerfile: compose/uri-runtime/Dockerfile
-    image: if-uri-uri-runtime:latest
+    image: if-uri-uri-runtime:latest@sha256:a1b55540e952425c9928be508a6b4dcdf948e207bcfd29a059be8382e36ed634
     hostname: host-node
     ports:
       - "${HOST_NODE_PORT:-18765}:8765"
@@ -42,7 +42,7 @@ services:
     build:
       context: ${IF_URI_ROOT}
       dockerfile: compose/uri-runtime/Dockerfile
-    image: if-uri-uri-runtime:latest
+    image: if-uri-uri-runtime:latest@sha256:a1b55540e952425c9928be508a6b4dcdf948e207bcfd29a059be8382e36ed634
     hostname: host-dashboard
     profiles: ["full"]
     ports:
@@ -66,7 +66,7 @@ services:
       - "lenovo:host-gateway"
 
   uri-smoke:
-    image: if-uri-uri-runtime:latest
+    image: if-uri-uri-runtime:latest@sha256:a1b55540e952425c9928be508a6b4dcdf948e207bcfd29a059be8382e36ed634
     profiles: ["smoke"]
     depends_on:
       host-node:
