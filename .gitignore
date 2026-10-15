@@ -279,9 +279,13 @@ scripts/
 
 !.github/
 !.github/**
-!.cursor/
-!.cursor/**
-!.cursor*
+!.cursor/rules/
+!.cursor/rules/**
+.cursor/*.json
+# koru runtime artefacts (generated)
+.planfile/.koru/
+.koru/
+.planfile/sprints/*.bak-*
 !.aider*
 !.aider.conf.yml
 !scripts/
