@@ -1,0 +1,94 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-003",
+  "summary": "Reconcile ruff linter configuration and snapshot line length",
+  "workstream": "governance",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-003/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "pyproject.toml",
+    "scripts/snapshot_route_schemas.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "7ee911b9c992daa50f360edb477603c0a4151b2e",
+    "targetBranch": "main",
+    "outcome": "Exclude .governance from ruff linting and wrap long line in snapshot_route_schemas.py.",
+    "nonGoals": [
+      "No production logic modifications"
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 10,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Add extend-exclude = ['.governance'] to pyproject.toml and wrap long line in scripts/snapshot_route_schemas.py.",
+      "components": [
+        {
+          "name": "configuration",
+          "paths": [
+            "pyproject.toml",
+            "scripts/snapshot_route_schemas.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "git revert"
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "ruff check ."
+        ],
+        "evidence": "Ruff linter passes with zero errors."
+      },
+      {
+        "criterion": "AC-02",
+        "commands": [
+          "ruff check ."
+        ],
+        "evidence": "Snapshot route schemas line length passes."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": [
+          "ruff check ."
+        ],
+        "evidence": "All checks passed!"
+      },
+      {
+        "criterion": "AC-04",
+        "commands": [
+          "bash project/governance-check.sh"
+        ],
+        "evidence": "Governance check passes cleanly."
+      }
+    ]
+  }
+}
