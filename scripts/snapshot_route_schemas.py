@@ -79,7 +79,10 @@ def _check_required_uris(uris: set[str]) -> list[str]:
 
 
 def _check_type_verified(routes: list[dict]) -> list[str]:
-    tv = next((r for r in routes if isinstance(r, dict) and r.get("uri") == "kvm://host/ui/command/type-verified"), None)
+    tv = next(
+        (r for r in routes if isinstance(r, dict) and r.get("uri") == "kvm://host/ui/command/type-verified"),
+        None,
+    )
     if not tv:
         return []
     props = (tv.get("inputSchema") or {}).get("properties") or {}
